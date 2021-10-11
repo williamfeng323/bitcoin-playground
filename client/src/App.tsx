@@ -1,28 +1,44 @@
+import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
 import React from 'react';
-import logo from './logo.svg';
-import './App.scss';
+import './App.css';
+import { Home } from './pages/Home/Home';
+import HeaderBar from './modules/components/TopHeadBar';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+import theme from './modules/theme';
+import { Wallet } from './pages/Wallet';
+import { useState } from 'react';
+
+export interface WalletInterface {
+  walletName: string;
+  mnemonic: string;
+}
+
+export const WalletsContext = React.createContext<{wallets: WalletInterface[], setWallets: React.Dispatch<React.SetStateAction<WalletInterface[]>>}>({wallets:[], setWallets: (value) => null});
 
 function App() {
+  let [wallets, setWallets] = useState<WalletInterface[]>([]);
   return (
     <div className="App">
-      <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-      />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline/>
+        <HeaderBar/>
+        <WalletsContext.Provider value={{wallets, setWallets}}>
+          <Router>
+              <Switch>
+                <Route path="/wallet">
+                  <Wallet />
+                </Route>
+                <Route path="/">
+                  <Home />
+                </Route>
+              </Switch>
+          </Router>
+        </WalletsContext.Provider>
+      </MuiThemeProvider>
     </div>
   );
 }
