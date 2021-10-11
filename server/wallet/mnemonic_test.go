@@ -3,8 +3,6 @@ package wallet
 import (
 	"encoding/hex"
 	"github.com/stretchr/testify/assert"
-	"github.com/williamfeng323/bitcoin-playground/lib/constant"
-
 	"testing"
 )
 
@@ -187,7 +185,7 @@ func TestEntropy_CalCheckSum(t *testing.T) {
 	b1 := ent.checksumEntropy
 	ent.CalCheckSum()
 	assert.NotEmpty(t, ent.checksumEntropy)
-	assert.Equal(t, len(ent.checksumEntropy), bitSize/constant.BitByteConvertor+1)
+	assert.Equal(t, len(ent.checksumEntropy), bitSize/BitByteConvertor+1)
 	assert.Equal(t, b1, ent.checksumEntropy)
 }
 
@@ -196,7 +194,7 @@ func TestGenerateMnemonic(t *testing.T) {
 		entStr, _ := hex.DecodeString(vector[0])
 		ent := Entropy{
 			entropy: entStr,
-			BitSize: uint(len(entStr) * constant.BitByteConvertor),
+			BitSize: uint(len(entStr) * BitByteConvertor),
 		}
 		ent.CalCheckSum()
 		mnemonic := GenerateMnemonic(ent)
@@ -209,7 +207,7 @@ func TestMnemonicToSeed(t *testing.T) {
 		entStr, _ := hex.DecodeString(vector[0])
 		ent := Entropy{
 			entropy: entStr,
-			BitSize: uint(len(entStr) * constant.BitByteConvertor),
+			BitSize: uint(len(entStr) * BitByteConvertor),
 		}
 		ent.CalCheckSum()
 		mnemonic := GenerateMnemonic(ent)

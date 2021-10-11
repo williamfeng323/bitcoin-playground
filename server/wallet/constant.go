@@ -1,6 +1,8 @@
 package wallet
 
-import "math/big"
+import (
+	"math/big"
+)
 
 const (
 	WordListSplitter         = "\n"
@@ -13,6 +15,6 @@ const (
 )
 
 var (
-	ElevenBitMask    = big.NewInt(2048)
-	ElevenBitAndMask = big.NewInt(2047)
+	ElevenBitMask            = big.NewInt(2048)
+	ElevenBitAndMask         = big.NewInt(2047)
 )
