@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/williamfeng323/bitcoin-playground/lib/config"
 	"github.com/williamfeng323/bitcoin-playground/routers"
@@ -18,8 +19,8 @@ func main() {
 	logger := log.Default()
 	addr := fmt.Sprintf("%s:%s", config.GetAppConfig().Host, config.GetAppConfig().Port)
 	router := gin.Default()
-	rg := router.Group("/api")
-	routers.RouterRegister(rg)
+	router.Use(cors.Default())
+	routers.RouterRegister(router)
 
 	srv := &http.Server{
 		Addr:    addr,

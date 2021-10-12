@@ -26,7 +26,7 @@ func init() {
 	appConfig = ApplicationConfig{
 		WordlistURL: "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt",
 		Host: "127.0.0.1",
-		Port: "8080",
+		Port: "8081",
 	}
 	yaml.Unmarshal(rawConfig, &appConfig)
 }

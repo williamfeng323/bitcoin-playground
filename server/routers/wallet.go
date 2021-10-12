@@ -1,9 +1,33 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"encoding/hex"
+	"github.com/gin-gonic/gin"
+	"github.com/williamfeng323/bitcoin-playground/wallet"
+	"net/http"
+)
 
 // RouterRegister router registration
-func RouterRegister(rg *gin.RouterGroup) {
-	//mnemonicRouter := rg.Group("mnemonic")
-	//mnemonicRouter
+func RouterRegister(rg *gin.Engine) {
+	rg.POST("/api/mnemonic", generateMnemonic)
+}
+
+type generateMnemonicQueryParam struct {
+	SentenceLength int `json:"sentenceLength" form:"sentenceLength" binding:"required,oneof=12 15 18 21 24"`
+	Passphrase string `json:"passphrase" form:"passphrase,omitempty"`
+}
+func generateMnemonic(ctx *gin.Context) {
+	params := generateMnemonicQueryParam{}
+	if err := ctx.ShouldBind(&params); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	entropy, err := wallet.GenerateEntropy(wallet.MS2ENT[params.SentenceLength])
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	mnemonic := wallet.GenerateMnemonic(entropy)
+	seed := wallet.MnemonicToSeed(mnemonic, params.Passphrase)
+	ctx.JSON(http.StatusOK, gin.H{"mnemonic": mnemonic, "seed": hex.EncodeToString(seed)})
 }

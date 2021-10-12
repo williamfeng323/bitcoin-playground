@@ -1,0 +1,14 @@
+.home {
+    height: 100%;
+    width: 100%;
+}
+
+.center {
+    top: 40%;
+    margin: auto;
+    position: relative;
+}
+
+.add-wallet-paper {
+    width: 50%;
+}

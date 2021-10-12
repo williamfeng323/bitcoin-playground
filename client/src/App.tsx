@@ -9,12 +9,13 @@ import {
   Route,
 } from "react-router-dom";
 import theme from './modules/theme';
-import { Wallet } from './pages/Wallet';
+import { Wallet } from './pages/Wallet/Wallet';
 import { useState } from 'react';
 
 export interface WalletInterface {
   walletName: string;
   mnemonic: string;
+  seed: string;
 }
 
 export const WalletsContext = React.createContext<{wallets: WalletInterface[], setWallets: React.Dispatch<React.SetStateAction<WalletInterface[]>>}>({wallets:[], setWallets: (value) => null});
@@ -26,8 +27,9 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <CssBaseline/>
         <HeaderBar/>
-        <WalletsContext.Provider value={{wallets, setWallets}}>
-          <Router>
+        <div className="main-content">
+          <WalletsContext.Provider value={{wallets, setWallets}}>
+            <Router>
               <Switch>
                 <Route path="/wallet">
                   <Wallet />
@@ -36,8 +38,9 @@ function App() {
                   <Home />
                 </Route>
               </Switch>
-          </Router>
-        </WalletsContext.Provider>
+            </Router>
+          </WalletsContext.Provider>
+        </div>
       </MuiThemeProvider>
     </div>
   );
