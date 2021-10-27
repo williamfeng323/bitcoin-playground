@@ -1,11 +1,19 @@
 import { Typography } from "@material-ui/core"
+import { makeStyles } from "@material-ui/styles";
 import {Route, Switch, useRouteMatch} from "react-router-dom";
 import {CreateWallet} from "./pages/CreateWallet/CreateWallet";
 
+const useStyle = makeStyles({
+    wallet: {
+        height: '100%'
+    }
+})
+
 const Wallet = () => {
+    const classes = useStyle()
     let { path } = useRouteMatch();
     return (
-    <div style={{height:"100%"}}>
+    <div className={classes.wallet}>
         <Switch>
             <Route exact path={path}>
                 <Typography  variant="h6" color="inherit" noWrap>

@@ -1,5 +1,4 @@
 import {Theme, createStyles, Typography, withStyles, Paper, WithStyles, Button} from "@material-ui/core";
-import { MouseEventHandler } from "react";
 import { WalletInterface } from "../../../App";
 import { useHistory } from "react-router-dom";
 import * as H from 'history';
