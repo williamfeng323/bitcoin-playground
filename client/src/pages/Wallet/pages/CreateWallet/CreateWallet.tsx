@@ -1,11 +1,11 @@
 import {Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography} from '@material-ui/core';
 import React, { useContext } from 'react';
-import * as _ from 'lodash';
 import './CreateWallet.css'
 import {MnemonicForm} from './components/MnemonicForm/MnemonicForm';
 import {WalletInterface, WalletsContext} from '../../../../App';
 import { Review } from './components/Review/Review';
 import { useHistory } from 'react-router';
+import { LocalStoreWalletsKey } from '../../../../libs/config';
 
 const steps = ['Mnemonic', 'Mnemonic Result'];
 const getStepContent = (step: number) => {
@@ -36,9 +36,10 @@ const CreateWallet = () => {
                 walletName: `Wallet #${wallets.length + 1}`,
                 mnemonic: mnemonic.sentence,
                 seed: mnemonic.seed,
-            }
-            wallets.push(wallet)
-            setWallets(wallets)
+            };
+            wallets.push(wallet);
+            setWallets(wallets);
+            window.sessionStorage.setItem(LocalStoreWalletsKey, JSON.stringify(wallets));
         }
         setActiveStep(activeStep + 1);
     };

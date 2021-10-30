@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Chip, createStyles, Theme, Typography, WithStyles, withStyles } from "@material-ui/core"
-import React, { useRef } from "react";
+import React from "react";
 import * as _ from 'lodash';
 import { MnemonicContext } from "../../CreateWallet";
 
@@ -33,9 +33,10 @@ const Review = withStyles(reviewStyle)(({classes}: Props) => {
       <Card className={classes.card}>
         <CardHeader title="Mnemonic Sentence"/>
         <CardContent>
-          {_.isEmpty(mnemonic.sentence) ? <Typography>No Mnemonic sentence</Typography> : wordList.map(word => {
+          {_.isEmpty(mnemonic.sentence) ? <Typography>No Mnemonic sentence</Typography> : wordList.map((word, ind) => {
             return React.cloneElement(
-              <Chip label={word} className={classes.chip}/>
+              <Chip label={word} className={classes.chip}/>,
+              {key: ind},
             )
           })}
         </CardContent>

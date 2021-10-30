@@ -4,6 +4,9 @@ body {
   width: 100vw;
 }
 
+#root {
+  height: 100%;
+}
 
 body {
   margin: 0;

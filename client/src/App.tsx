@@ -11,6 +11,7 @@ import {
 import theme from './modules/theme';
 import { Wallet } from './pages/Wallet/Wallet';
 import { useState } from 'react';
+import { LocalStoreWalletsKey } from './libs/config';
 
 export interface WalletInterface {
   walletName: string;
@@ -19,9 +20,10 @@ export interface WalletInterface {
 }
 
 export const WalletsContext = React.createContext<{wallets: WalletInterface[], setWallets: React.Dispatch<React.SetStateAction<WalletInterface[]>>}>({wallets:[], setWallets: (value) => null});
+const initWallets = window.sessionStorage.getItem(LocalStoreWalletsKey)? JSON.parse(window.sessionStorage.getItem(LocalStoreWalletsKey) as string) as WalletInterface[]:[];
 
 function App() {
-  let [wallets, setWallets] = useState<WalletInterface[]>([]);
+  let [wallets, setWallets] = useState<WalletInterface[]>(initWallets);
   return (
     <div className="App">
       <MuiThemeProvider theme={theme}>

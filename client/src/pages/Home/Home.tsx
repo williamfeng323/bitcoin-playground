@@ -1,30 +1,35 @@
-import { Card, CardContent, CardHeader, Chip, Container, Typography } from '@material-ui/core';
+import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import { useContext } from 'react';
 import { WalletsContext } from '../../App';
+import { ManageAddress } from '../Wallet/pages/ManageAddress/ManageAddress';
 import AddWalletPaper from './components/AddWalletPaper';
 
-import "./Home.css";
+const homeStyle = makeStyles({
+  home: {
+    height: '100vh',
+    width: '100%',
+  },
+  addWalletPaper: {
+      width: '50%',
+      top: '40%',
+      margin: 'auto',
+      position: 'relative',
+  }
+});
 
 const Home = () => {
   let {wallets} = useContext(WalletsContext);
+  const classes = homeStyle();
   return (
-    <div className="home">
+    <div className={classes.home}>
       {
         wallets.length > 0 ?
-          <Typography  variant="h6" color="inherit" noWrap>
-            <Card >
-              <CardHeader title="Mnemonic Sentence"/>
-              <CardContent>
-                {wallets.map(wallet => {
-                  return React.cloneElement(
-                    <Chip label={wallet.walletName}/>
-                  )
-                })}
-              </CardContent>
-            </Card>
-          </Typography> :
-          <div className="center add-wallet-paper">
+          <div>
+            <ManageAddress wallets={wallets}/>
+          </div>:
+          <div className={classes.addWalletPaper}>
             <Container>
               <AddWalletPaper wallets={wallets}/>
             </Container>
