@@ -7,11 +7,6 @@ import (
 	"net/http"
 )
 
-// RouterRegister router registration
-func RouterRegister(rg *gin.Engine) {
-	rg.POST("/api/mnemonic", generateMnemonic)
-}
-
 type generateMnemonicQueryParam struct {
 	SentenceLength int `json:"sentenceLength" form:"sentenceLength" binding:"required,oneof=12 15 18 21 24"`
 	Passphrase string `json:"passphrase" form:"passphrase,omitempty"`

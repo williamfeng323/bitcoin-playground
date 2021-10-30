@@ -3,6 +3,8 @@ module github.com/williamfeng323/bitcoin-playground
 go 1.16
 
 require (
+	github.com/btcsuite/btcd v0.21.0-beta // indirect
+	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/stretchr/testify v1.7.0
