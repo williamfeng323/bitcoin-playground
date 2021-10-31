@@ -14,12 +14,12 @@ type generateMnemonicQueryParam struct {
 func generateMnemonic(ctx *gin.Context) {
 	params := generateMnemonicQueryParam{}
 	if err := ctx.ShouldBind(&params); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		generalExceptions(ctx, err)
 		return
 	}
 	entropy, err := wallet.GenerateEntropy(wallet.MS2ENT[params.SentenceLength])
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		generalExceptions(ctx, err)
 		return
 	}
 	mnemonic := wallet.GenerateMnemonic(entropy)

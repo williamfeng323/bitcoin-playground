@@ -1,35 +1,169 @@
-import React from "react";
-import { Typography } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { createStyles, FormControl, FormHelperText, FormLabel, Grid, Input, InputLabel, MenuItem, Select, Theme, Typography } from "@material-ui/core";
+import { withStyles, WithStyles } from "@material-ui/styles";
+import * as axios from 'axios';
+import * as _ from 'lodash';
+import classNames from 'classnames';
+import { WalletInterface } from "../../../../../../App";
+import { requestClient } from "../../../../../../libs/request";
+import { AddressTable } from "./AddressTable";
 
-const Address = () => {
+const MaxInt32 = 2147483648;
+
+const useStyle = (theme: Theme) => {
+  return createStyles({
+    gridContainer: {textAlign:"left", marginLeft:"7%", marginTop:"2%", marginRight:"7%", width:"80%"},
+    wrapText:{overflowWrap: "anywhere"},
+    formControl: {marginTop: "10px"},
+    fullWidth: {width: "100%"}
+  })
+}
+
+const isDerivationPathValid = (path: string) => {
+  const reg = /(^m[\/0-9]*\d$|^m\/$|^m$)/g;
+  if (!reg.test(path)) {
+    return false;
+  }
+  const depths = path.split("/");
+  for (let i = 1; i<depths.length; i++) {
+    if (_.isEmpty(depths[i])) {
+      continue;
+    }
+    if (parseInt(depths[i]) > MaxInt32) {
+      return false;
+    }
+  }
+  return true;
+}
+
+interface Props extends WithStyles<typeof useStyle> {
+  wallet: WalletInterface
+}
+
+type NetType = "mainnet" |"testnet3";
+
+type NetsMap = {
+  [index in NetType]: string;
+};
+
+const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
+
+  const [rootKey, setRootKey] = useState("");
+  const [currentNet, setCurrentNet] = useState("");
+  const [nets, setNets] = useState<NetsMap>({} as unknown as NetsMap);
+
+  const [derivationPath, setDerivationPath] = useState<{path: string, helpText: string}>({path:"", helpText:""});
+  const [isValidDerivationPath, setIsValidDerivationPath] = useState(true);
+
+  const handleNetChange = async (net: NetType) => {
+    setCurrentNet(net)
+    setRootKey(nets[net]);
+  }
+  const fetchRootKeys = async (seed:string) => {
+    const tempNet: NetsMap = {} as unknown as NetsMap;
+    let rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
+        (`/master-node`, {seed, net: "mainnet"})).data.rootKey;
+    tempNet["mainnet"] = rst;
+    rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
+      (`/master-node`, {seed, net: "testnet3"})).data.rootKey;
+    tempNet["testnet3"] = rst;
+    console.log(JSON.stringify(tempNet));
+    setNets(tempNet);
+    setCurrentNet('');
+    setRootKey('');
+  };
+  useEffect(() => {
+    fetchRootKeys(wallet.seed);
+  },[wallet]);
   return (
     <React.Fragment>
-      <Typography paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-        incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent
-        elementum facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in
-        hendrerit gravida rutrum quisque non tellus. Convallis convallis tellus id interdum
-        velit laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing.
-        Amet nisl suscipit adipiscing bibendum est ultricies integer quis. Cursus euismod quis
-        viverra nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo.
-        Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus
-        at augue. At augue eget arcu dictum varius duis at consectetur lorem. Velit sed
-        ullamcorper morbi tincidunt. Lorem donec massa sapien faucibus et molestie ac.
-      </Typography>
-      <Typography paragraph>
-        Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-        facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-        tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-        consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus
-        sed vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in.
-        In hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-        et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique
-        sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo
-        viverra maecenas accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam
-        ultrices sagittis orci a.
-      </Typography>
+      <Grid container className={classes.gridContainer}>
+        <Grid item xs={12} md={12} style={{marginTop:"10px"}}>
+          <Typography>{wallet.walletName}</Typography>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <Grid container>
+            <Grid item xs={12} md={2}>
+              <Typography>Mnemonic Sentence: </Typography>
+            </Grid>
+            <Grid item xs={12} md={10}>
+              <Typography paragraph>
+                {wallet.mnemonic}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <Grid container>
+            <Grid item xs={12} md={2}>
+              <Typography>Seed: </Typography>
+            </Grid>
+            <Grid item xs={12} md={10}>
+              <Typography paragraph>
+                {wallet.seed}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <FormControl className={classNames(classes.fullWidth, classes.formControl)}>
+            <InputLabel htmlFor="choose-net">Net</InputLabel>
+            <Select
+                value={currentNet}        
+                onChange={(e) => {handleNetChange(e.target.value as NetType)}}
+                inputProps={{
+                  name: 'Net',
+                  id: 'choose-net',
+                }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={"mainnet"}>mainnet</MenuItem>
+              <MenuItem value={"testnet3"}>testnet</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <Grid container>
+            <Grid item xs={12} md={2}>
+              <Typography>RootKey: </Typography>
+            </Grid>
+            <Grid item xs={12} md={10}>
+              <Typography paragraph>
+                {rootKey}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <FormControl error={!isValidDerivationPath} className={classes.fullWidth}>
+            <InputLabel htmlFor="derivation-path">Derivation Path</InputLabel>
+            <Input
+              id="derivation-path"
+              value={derivationPath.path}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!isDerivationPathValid(val)) {
+                  setIsValidDerivationPath(false);
+                  setDerivationPath({path:val, helpText:"Derivation Path in wrong format"});
+                  return;
+                }
+                setIsValidDerivationPath(true);
+                setDerivationPath({path:val, helpText:""});
+              }}
+              aria-describedby="derivation-path-text"
+              placeholder="m / purpose' / coin_type' / account' / change / address_index"
+            />
+            <FormHelperText id="derivation-path-text">{derivationPath.helpText}</FormHelperText>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <AddressTable/>
+        </Grid>
+      </Grid>
     </React.Fragment>
   )
-}
+})
 
 export { Address };

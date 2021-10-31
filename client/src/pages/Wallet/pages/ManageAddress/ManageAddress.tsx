@@ -1,10 +1,11 @@
 import { AppBar, createStyles, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Theme, Toolbar, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { ChevronRight as ChevronRightIcon, ChevronLeft as ChevronLeftIcon, Menu as MenuIcon, Money as MoneyIcon } from '@material-ui/icons';
+import { ChevronRight as ChevronRightIcon, ChevronLeft as ChevronLeftIcon, Menu as MenuIcon, Money as MoneyIcon, AddCircleOutline } from '@material-ui/icons';
 import { useState } from "react";
 import classNames from 'classnames';
 import theme from "../../../../modules/theme";
 import { WalletInterface } from "../../../../App";
 import { Address } from './components/Address/Address';
+import { useHistory } from "react-router";
 
 interface Props extends WithStyles<typeof useStyle> {
   wallets: WalletInterface[]
@@ -77,6 +78,9 @@ const useStyle = (theme:Theme) => {
 
 const ManageAddress = withStyles(useStyle)(({classes, wallets}: Props) => {
   const [open, setOpen] = useState<boolean>(false);
+  const [walletIdx, setWalletIdx] = useState(0);
+  const [currentWallet, setCurrentWallet] = useState<WalletInterface>(wallets[0]);
+  let history = useHistory();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -132,16 +136,24 @@ const ManageAddress = withStyles(useStyle)(({classes, wallets}: Props) => {
           <Divider />
           <List>
             {wallets.map((wallet, index) => (
-              <ListItem button key={index}>
+              <ListItem button selected={index===walletIdx} key={index} onClick={()=>{
+                setWalletIdx(index);
+                setCurrentWallet(wallets[index]);
+              }}>
                 <ListItemIcon><MoneyIcon /></ListItemIcon>
                 <ListItemText primary={wallet.walletName} />
               </ListItem>
             ))}
+            <Divider/>
+            <ListItem button onClick={() => {history.push("/wallet/create-wallet")}}>
+              <ListItemIcon><AddCircleOutline/></ListItemIcon>
+              <ListItemText primary="Add New Wallet"></ListItemText>
+            </ListItem>
           </List>
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Address />
+          <Address wallet={currentWallet}/>
         </main>
       </div>
   )
