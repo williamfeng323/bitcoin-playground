@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { createStyles, FormControl, FormHelperText, FormLabel, Grid, Input, InputLabel, MenuItem, Select, Theme, Typography } from "@material-ui/core";
+import { createStyles, FormControl, FormControlLabel, FormHelperText, FormLabel, Grid, Input, InputLabel, MenuItem, Select, Switch, Theme, Typography } from "@material-ui/core";
 import { withStyles, WithStyles } from "@material-ui/styles";
 import * as axios from 'axios';
 import * as _ from 'lodash';
 import classNames from 'classnames';
 import { WalletInterface } from "../../../../../../App";
 import { requestClient } from "../../../../../../libs/request";
-import { AddressTable } from "./AddressTable";
+import { AddressTable, AddressDataMap } from "./AddressTable";
 
 const MaxInt32 = 2147483648;
 
@@ -20,7 +20,7 @@ const useStyle = (theme: Theme) => {
 }
 
 const isDerivationPathValid = (path: string) => {
-  const reg = /(^m[\/0-9]*\d$|^m\/$|^m$)/g;
+  const reg = /^m(\/[0-9]*'?)*[0-9']$|^m\/$|^m$/g;
   if (!reg.test(path)) {
     return false;
   }
@@ -46,31 +46,70 @@ type NetsMap = {
   [index in NetType]: string;
 };
 
+interface DerivedKeys {
+  parentPrvKey: string;
+  parentPubKey: string;
+  derivedKeys: AddressDataMap[];
+}
+
+type SemanticType = "P2WPKH" | "P2WSH";
+
 const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
 
   const [rootKey, setRootKey] = useState("");
   const [currentNet, setCurrentNet] = useState("");
+  const [isHarden, setIsHarden] = useState(false);
+  const [derivedKeys, setDerivedKeys] = useState<DerivedKeys>({} as DerivedKeys);
+  const [currentScriptSemantic, setCurrentScriptSemantic] = useState("P2WPKH");
   const [nets, setNets] = useState<NetsMap>({} as unknown as NetsMap);
 
   const [derivationPath, setDerivationPath] = useState<{path: string, helpText: string}>({path:"", helpText:""});
   const [isValidDerivationPath, setIsValidDerivationPath] = useState(true);
 
-  const handleNetChange = async (net: NetType) => {
+  const handleNetChange = (net: NetType) => {
     setCurrentNet(net)
     setRootKey(nets[net]);
+  }
+
+  const handleSemanticChange = async (semantic: SemanticType) => {
+    setCurrentScriptSemantic(semantic)
+  }
+
+  const handleDerivedPathCHange = async (path: string) => {
+    if (_.isEmpty(path)) {
+      setDerivationPath({path:path, helpText:""});
+      return;
+    }
+    if (!isDerivationPathValid(path)) {
+      setIsValidDerivationPath(false);
+      setDerivationPath({path:path, helpText:"Derivation Path in wrong format"});
+      return;
+    }
+    setIsValidDerivationPath(true);
+    setDerivationPath({path:path, helpText:""});
+    if (!_.isEmpty(currentNet) && !_.isEmpty(rootKey)) {
+      let rst = (await requestClient.post<any, axios.AxiosResponse<DerivedKeys>>('/master-node/derive-keys', {
+        derivePath: path, scriptSemantic: currentScriptSemantic,
+        rootKey: rootKey, net: currentNet, isHarden,
+      }));
+      setDerivedKeys(rst.data);
+    }
   }
   const fetchRootKeys = async (seed:string) => {
     const tempNet: NetsMap = {} as unknown as NetsMap;
     let rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
-        (`/master-node`, {seed, net: "mainnet"})).data.rootKey;
+        ('/master-node', {seed, net: "mainnet"})).data.rootKey;
     tempNet["mainnet"] = rst;
     rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
-      (`/master-node`, {seed, net: "testnet3"})).data.rootKey;
+      ('/master-node', {seed, net: "testnet3"})).data.rootKey;
     tempNet["testnet3"] = rst;
     console.log(JSON.stringify(tempNet));
     setNets(tempNet);
     setCurrentNet('');
     setRootKey('');
+    setIsHarden(false);
+    setDerivationPath({path:"", helpText:""});
+    setDerivedKeys({} as DerivedKeys);
   };
   useEffect(() => {
     fetchRootKeys(wallet.seed);
@@ -142,15 +181,9 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
             <Input
               id="derivation-path"
               value={derivationPath.path}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const val = e.target.value;
-                if (!isDerivationPathValid(val)) {
-                  setIsValidDerivationPath(false);
-                  setDerivationPath({path:val, helpText:"Derivation Path in wrong format"});
-                  return;
-                }
-                setIsValidDerivationPath(true);
-                setDerivationPath({path:val, helpText:""});
+                handleDerivedPathCHange(val);
               }}
               aria-describedby="derivation-path-text"
               placeholder="m / purpose' / coin_type' / account' / change / address_index"
@@ -158,8 +191,61 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
             <FormHelperText id="derivation-path-text">{derivationPath.helpText}</FormHelperText>
           </FormControl>
         </Grid>
+        <Grid item xs={12} md={12}>
+          <FormControl className={classNames(classes.fullWidth, classes.formControl)}>
+            <InputLabel htmlFor="choose-semantic">Script Semantics</InputLabel>
+            <Select
+                value={currentScriptSemantic}
+                onChange={async (e) => {await handleSemanticChange(e.target.value as SemanticType)}}
+                inputProps={{
+                  name: 'choose semantic',
+                  id: 'choose-semantic',
+                }}
+            >
+              <MenuItem value={"P2WPKH"}>P2WPKH</MenuItem>
+              <MenuItem value={"P2WSH"}>P2WSH</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <Grid container>
+            <Grid item xs={12} md={4}>
+              <Typography>Bip32 Extended Public Key: </Typography>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <Typography paragraph>
+                {derivedKeys.parentPubKey}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
+          <Grid container>
+            <Grid item xs={12} md={4}>
+              <Typography>Bip32 Extended Private Key: </Typography>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <Typography paragraph>
+                {derivedKeys.parentPrvKey}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isHarden}
+              onChange={(e) => {setIsHarden(e.target.checked)}}
+              value="isHarden"
+              color="primary"
+            />
+          }
+          label="Is Harden"
+        />
+        </Grid>
         <Grid item xs={12}>
-          <AddressTable/>
+          <AddressTable addresses={derivedKeys.derivedKeys}/>
         </Grid>
       </Grid>
     </React.Fragment>

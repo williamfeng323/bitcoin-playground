@@ -23,19 +23,22 @@ const Home = () => {
   let {wallets} = useContext(WalletsContext);
   const classes = homeStyle();
   return (
-    <div className={classes.home}>
+    <React.Fragment>
+
       {
         wallets.length > 0 ?
-          <div>
-            <ManageAddress wallets={wallets}/>
-          </div>:
-          <div className={classes.addWalletPaper}>
-            <Container>
-              <AddWalletPaper wallets={wallets}/>
-            </Container>
+        <div>
+        <ManageAddress wallets={wallets}/>
+        </div>:
+          <div className={classes.home}>
+            <div className={classes.addWalletPaper}>
+              <Container>
+                <AddWalletPaper wallets={wallets}/>
+              </Container>
+            </div>
           </div>
-      }
-    </div>
+        }
+    </React.Fragment>
   )
 };
 

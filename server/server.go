@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/williamfeng323/bitcoin-playground/lib/config"
 	"github.com/williamfeng323/bitcoin-playground/routers"
+
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +23,10 @@ func main() {
 	addr := fmt.Sprintf("%s:%s", config.GetAppConfig().Host, config.GetAppConfig().Port)
 	router := gin.Default()
 	router.Use(cors.Default())
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("isDerivationPath", routers.IsDerivationPath)
+	}
 	routers.RouterRegister(router)
 
 	srv := &http.Server{

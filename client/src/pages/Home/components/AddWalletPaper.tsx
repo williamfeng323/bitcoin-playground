@@ -6,7 +6,7 @@ import * as H from 'history';
 const paperStyles = (theme:Theme) => {
   return createStyles({
     root: {
-      height: "100%",
+      // height: "100%",
       margin: "auto",
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),

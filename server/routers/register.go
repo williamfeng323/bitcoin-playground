@@ -9,6 +9,7 @@ import (
 func RouterRegister(rg *gin.Engine) {
 	rg.POST("/api/mnemonic", generateMnemonic)
 	rg.POST("/api/master-node", generateMasterNode)
+	rg.POST("/api/master-node/derive-keys", deriveKeys)
 }
 
 func generalExceptions(ctx *gin.Context, err error) {
