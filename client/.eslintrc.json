@@ -1,0 +1,30 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "react-app",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "settings": {
+      "import/resolver": {
+        "typescript": {
+          "alwaysTryTypes": true
+        }
+      }
+    },
+    "parserOptions": {
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "rules": {
+      "quotes": [
+        2,
+        "single"
+      ],
+      "import/prefer-default-export": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off"
+    }
+  }

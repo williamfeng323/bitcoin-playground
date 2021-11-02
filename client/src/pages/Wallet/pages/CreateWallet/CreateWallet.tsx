@@ -32,7 +32,7 @@ const CreateWallet = () => {
     const [mnemonic, setMnemonic] = React.useState<MnemonicInterface>({seed: '', sentence:''});
     const handleNext = () => {
         if (activeStep === steps.length - 1) {
-            let wallet: WalletInterface = {
+            const wallet: WalletInterface = {
                 walletName: `Wallet #${wallets.length + 1}`,
                 mnemonic: mnemonic.sentence,
                 seed: mnemonic.seed,

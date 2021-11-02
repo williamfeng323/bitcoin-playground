@@ -1,0 +1,9 @@
+FROM golang:1.16-alpine
+WORKDIR /var/server
+
+COPY ./server ./
+
+RUN go build ./server.go
+RUN chmod +x ./server
+
+ENTRYPOINT [ "./server" ]

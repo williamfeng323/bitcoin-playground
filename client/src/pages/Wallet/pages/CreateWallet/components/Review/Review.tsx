@@ -1,7 +1,7 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Chip, createStyles, Theme, Typography, WithStyles, withStyles } from "@material-ui/core"
-import React from "react";
+import { Button, Card, CardActions, CardContent, CardHeader, Chip, createStyles, Theme, Typography, WithStyles, withStyles } from '@material-ui/core'
+import React from 'react';
 import * as _ from 'lodash';
-import { MnemonicContext } from "../../CreateWallet";
+import { MnemonicContext } from '../../CreateWallet';
 
 const reviewStyle = (theme:Theme) => {
   return createStyles({
@@ -23,7 +23,7 @@ const reviewStyle = (theme:Theme) => {
   })
 };
 
-interface Props extends WithStyles<typeof reviewStyle> {}
+type Props = WithStyles<typeof reviewStyle>
 
 const Review = withStyles(reviewStyle)(({classes}: Props) => {
   const {mnemonic} = React.useContext(MnemonicContext);

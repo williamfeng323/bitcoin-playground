@@ -20,7 +20,8 @@ import (
 
 func main() {
 	logger := log.Default()
-	addr := fmt.Sprintf("%s:%s", config.GetAppConfig().Host, config.GetAppConfig().Port)
+	appConf := config.GetAppConfig()
+	addr := fmt.Sprintf("%s:%s", appConf.Host, appConf.Port)
 	router := gin.Default()
 	router.Use(cors.Default())
 
@@ -35,8 +36,14 @@ func main() {
 	}
 	go func() {
 		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("listener failed to start: ", err)
+		if len(appConf.TLSCertFile)!=0 && len(appConf.TLSKeyFile)!=0 {
+			if err := srv.ListenAndServeTLS(appConf.TLSCertFile, appConf.TLSKeyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatal("listener failed to start: ", err)
+			}
+		} else {
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatal("listener failed to start: ", err)
+			}
 		}
 	}()
 	logger.Printf("Start to listen %s", addr)

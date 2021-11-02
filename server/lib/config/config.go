@@ -8,9 +8,11 @@ import (
 )
 
 type ApplicationConfig struct {
-	WordlistURL string `yaml:"wordlist_url"`
+	WordlistURL string `yaml:"wordlistUrl"`
 	Host        string `yaml:"host"`
 	Port        string `yaml:"port"`
+	TLSCertFile string `yaml:"tlsCertFile"`
+	TLSKeyFile  string `yaml:"tlsKeyFile"`
 }
 
 var appConfig ApplicationConfig

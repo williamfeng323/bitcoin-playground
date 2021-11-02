@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   createStyles,
@@ -16,24 +16,24 @@ import {
   TablePagination,
   Theme,
   Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { Close } from '@material-ui/icons';
-import { withStyles, WithStyles } from "@material-ui/styles";
+import { withStyles, WithStyles } from '@material-ui/styles';
 import * as axios from 'axios';
 import * as _ from 'lodash';
 import classNames from 'classnames';
-import { WalletInterface } from "../../../../../../App";
-import { requestClient } from "../../../../../../libs/request";
-import { AddressTable, AddressDataMap } from "./AddressTable";
+import { WalletInterface } from '../../../../../../App';
+import { requestClient } from '../../../../../../libs/request';
+import { AddressTable, AddressDataMap } from './AddressTable';
 
 const MaxInt32 = 2147483648;
 
 const useStyle = (theme: Theme) => {
     return createStyles({
-        gridContainer: {textAlign:"left", marginLeft:"7%", marginTop:"2%", marginRight:"7%", width:"80%"},
-        wrapText:{overflowWrap: "anywhere"},
-        formControl: {marginTop: "10px"},
-        fullWidth: {width: "100%"},
+        gridContainer: {textAlign:'left', marginLeft:'7%', marginTop:'2%', marginRight:'7%', width:'80%'},
+        wrapText:{overflowWrap: 'anywhere'},
+        formControl: {marginTop: '10px'},
+        fullWidth: {width: '100%'},
         pagination: {display:'inline-flex', marginTop:'10px'},
         generateMultiSigBtn: {marginTop: '20px'},
         generateMultiSig: {alignSelf: 'flex-end'},
@@ -46,7 +46,7 @@ const isDerivationPathValid = (path: string) => {
   if (!reg.test(path)) {
     return false;
   }
-  const depths = path.split("/");
+  const depths = path.split('/');
   for (let i = 1; i<depths.length; i++) {
     if (_.isEmpty(depths[i])) {
       continue;
@@ -62,7 +62,7 @@ interface Props extends WithStyles<typeof useStyle> {
   wallet: WalletInterface
 }
 
-type NetType = "mainnet" |"testnet3";
+type NetType = 'mainnet' |'testnet3';
 
 type NetsMap = {
   [index in NetType]: string;
@@ -74,22 +74,22 @@ interface DerivedKeys {
   derivedKeys: AddressDataMap[];
 }
 
-type SemanticType = "P2WPKH" | "P2WSH";
+type SemanticType = 'P2WPKH' | 'P2WSH';
 
 const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
 
-  const [rootKey, setRootKey] = useState("");
+  const [rootKey, setRootKey] = useState('');
   const [page, setPage] = useState(0);
   const [currentPageSize, setCurrentPageSize] = useState(10);
   const [fetchSize, setFetchSize] = useState(100);
   const [multiSigN, setMultiSigN] = useState(0);
   const [multiSigAddr, setMultiSigAddr] = useState('');
-  const [currentNet, setCurrentNet] = useState("");
+  const [currentNet, setCurrentNet] = useState('');
   const [isHarden, setIsHarden] = useState(false);
   const [derivedKeys, setDerivedKeys] = useState<DerivedKeys>({} as DerivedKeys);
-  const [currentScriptSemantic, setCurrentScriptSemantic] = useState("P2WPKH");
+  const [currentScriptSemantic, setCurrentScriptSemantic] = useState('P2WPKH');
   const [nets, setNets] = useState<NetsMap>({} as unknown as NetsMap);
-  const [derivationPath, setDerivationPath] = useState<{path: string, helpText: string}>({path:"", helpText:""});
+  const [derivationPath, setDerivationPath] = useState<{path: string, helpText: string}>({path:'', helpText:''});
   const [isValidDerivationPath, setIsValidDerivationPath] = useState(true);
   const [selectedAddr, setSelectedAddr] = useState<{[index:string]: boolean}>({} as {[index:string]: boolean});
   const [openAlert, setOpenAlert] = React.useState({status: false, message:''});
@@ -117,7 +117,7 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
         return;
     }
     try {
-        let rst = (await requestClient.post<any, axios.AxiosResponse<{p2sh:string}>>('/master-node/multisig-addr', {
+        const rst = (await requestClient.post<any, axios.AxiosResponse<{p2sh:string}>>('/master-node/multisig-addr', {
             n: multiSigN, pubKeys: _.keys(selectedAddr)
         }));
         setMultiSigAddr(rst.data.p2sh);
@@ -128,7 +128,7 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
 
   const refreshDerivationAddrs = async () => {
     if (!_.isEmpty(currentNet) && !_.isEmpty(rootKey) && !_.isEmpty(derivationPath.path)){
-      let rst = (await requestClient.post<any, axios.AxiosResponse<DerivedKeys>>('/master-node/derivation-keys', {
+      const rst = (await requestClient.post<any, axios.AxiosResponse<DerivedKeys>>('/master-node/derivation-keys', {
         derivePath: derivationPath.path, scriptSemantic: currentScriptSemantic,
         rootKey: rootKey, net: currentNet, isHarden:isHarden, pageSize: fetchSize,
       }));
@@ -138,17 +138,17 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
   const fetchRootKeys = async (seed:string) => {
     const tempNet: NetsMap = {} as unknown as NetsMap;
     let rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
-        ('/master-node', {seed, net: "mainnet"})).data.rootKey;
-    tempNet["mainnet"] = rst;
+        ('/master-node', {seed, net: 'mainnet'})).data.rootKey;
+    tempNet['mainnet'] = rst;
     rst = (await requestClient.post<{seed:string; net: string}, axios.AxiosResponse<{rootKey:string}>>
-      ('/master-node', {seed, net: "testnet3"})).data.rootKey;
-    tempNet["testnet3"] = rst;
+      ('/master-node', {seed, net: 'testnet3'})).data.rootKey;
+    tempNet['testnet3'] = rst;
     console.log(JSON.stringify(tempNet));
     setNets(tempNet);
     setCurrentNet('');
     setRootKey('');
     setIsHarden(false);
-    setDerivationPath({path:"", helpText:""});
+    setDerivationPath({path:'', helpText:''});
     setDerivedKeys({} as DerivedKeys);
   };
   useEffect(() => {
@@ -187,7 +187,7 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
           ]}
         />
       <Grid container className={classes.gridContainer}>
-        <Grid item xs={12} md={12} style={{marginTop:"10px"}}>
+        <Grid item xs={12} md={12} style={{marginTop:'10px'}}>
           <Typography>{wallet.walletName}</Typography>
         </Grid>
         <Grid item xs={12} md={12} className={classNames(classes.wrapText, classes.formControl)}>
@@ -228,8 +228,8 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={"mainnet"}>mainnet</MenuItem>
-              <MenuItem value={"testnet3"}>testnet</MenuItem>
+              <MenuItem value={'mainnet'}>mainnet</MenuItem>
+              <MenuItem value={'testnet3'}>testnet</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -254,16 +254,16 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
               onChange={async (e) => {
                 const p = e.target.value;
                 if (_.isEmpty(p)) {
-                  await setDerivationPath({path:p, helpText:""});
+                  await setDerivationPath({path:p, helpText:''});
                   return;
                 }
                 if (!isDerivationPathValid(p)) {
                   await setIsValidDerivationPath(false);
-                  await setDerivationPath({path:p, helpText:"Derivation Path in wrong format"});
+                  await setDerivationPath({path:p, helpText:'Derivation Path in wrong format'});
                   return;
                 }
                 await setIsValidDerivationPath(true);
-                const newPath = {path:p, helpText:""};
+                const newPath = {path:p, helpText:''};
                 await setDerivationPath(newPath);
               }}
               aria-describedby="derivation-path-text"
@@ -283,7 +283,7 @@ const Address = withStyles(useStyle)(({classes, wallet}: Props) => {
                   id: 'choose-semantic',
                 }}
             >
-              <MenuItem value={"P2WPKH"}>P2WPKH</MenuItem>
+              <MenuItem value={'P2WPKH'}>P2WPKH</MenuItem>
             </Select>
           </FormControl>
         </Grid>

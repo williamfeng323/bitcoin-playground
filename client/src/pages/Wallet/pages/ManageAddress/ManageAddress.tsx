@@ -1,11 +1,11 @@
-import { AppBar, createStyles, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Theme, Toolbar, Typography, withStyles, WithStyles } from "@material-ui/core";
+import { AppBar, createStyles, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Theme, Toolbar, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { ChevronRight as ChevronRightIcon, ChevronLeft as ChevronLeftIcon, Menu as MenuIcon, Money as MoneyIcon, AddCircleOutline } from '@material-ui/icons';
-import { useState } from "react";
+import { useState } from 'react';
 import classNames from 'classnames';
-import theme from "../../../../modules/theme";
-import { WalletInterface } from "../../../../App";
+import theme from '../../../../modules/theme';
+import { WalletInterface } from '../../../../App';
 import { Address } from './components/Address/Address';
-import { useHistory } from "react-router";
+import { useHistory } from 'react-router';
 
 interface Props extends WithStyles<typeof useStyle> {
   wallets: WalletInterface[]
@@ -80,7 +80,7 @@ const ManageAddress = withStyles(useStyle)(({classes, wallets}: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [walletIdx, setWalletIdx] = useState(0);
   const [currentWallet, setCurrentWallet] = useState<WalletInterface>(wallets[0]);
-  let history = useHistory();
+  const history = useHistory();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -145,7 +145,7 @@ const ManageAddress = withStyles(useStyle)(({classes, wallets}: Props) => {
               </ListItem>
             ))}
             <Divider/>
-            <ListItem button onClick={() => {history.push("/wallet/create-wallet")}}>
+            <ListItem button onClick={() => {history.push('/wallet/create-wallet')}}>
               <ListItemIcon><AddCircleOutline/></ListItemIcon>
               <ListItemText primary="Add New Wallet"></ListItemText>
             </ListItem>

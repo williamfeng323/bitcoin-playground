@@ -1,7 +1,7 @@
 import MuiTable from 'mui-virtualized-table';
 import React from 'react';
-import {createStyles, Theme, withStyles} from "@material-ui/core";
-import {WithStyles} from "@material-ui/styles";
+import {createStyles, Theme, withStyles} from '@material-ui/core';
+import {WithStyles} from '@material-ui/styles';
 import './AddressTable.css';
 interface AddressDataMap {
     path: string;
