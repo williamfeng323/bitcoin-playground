@@ -64,3 +64,19 @@ func TestGetAddressesFromRootKey(t *testing.T) {
 		assert.NotEmpty(t, strAddr)
 	}
 }
+
+func TestToMultiSigP2SHAddress(t *testing.T) {
+	addr, err := ToMultiSigP2SHAddress(18, []string{})
+	assert.Empty(t, addr)
+	assert.Error(t, err, "M or pub-keys cannot be greater than 16")
+
+	addr, err = ToMultiSigP2SHAddress(5, []string{})
+	assert.Empty(t, addr)
+	assert.Error(t, err, "no pub keys provided")
+
+	addr, err = ToMultiSigP2SHAddress(3, []string{"12345"})
+	assert.Error(t, err, "M cannot be less than pub keys")
+
+	addr, err = ToMultiSigP2SHAddress(1, []string{"xpub6Gtsqete458wyPxVuX45oQCbbZd6kNHBEjsZLeVQCWhdb5gVropXWuSTCjbQVu3i93g6y1WuVMRxd9BSvNMBK9fsypBT1ihEEfsHfBKWpAM"})
+	assert.Equal(t, "2Mw1Q7x2HibJRn3nHZoFF9cKTF8zzWykVeU", addr)
+}

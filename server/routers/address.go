@@ -68,7 +68,7 @@ func deriveKeys(ctx *gin.Context) {
 		generalExceptions(ctx, err)
 		return
 	}
-	offset := param.Page*param.PageSize
+	offset := param.Page * param.PageSize
 	pKey, eKeys, err := wallet.GetAddressesFromRootKey(param.RootKey, param.DerivePath,
 		param.IsHarden, param.PageSize, offset)
 	if err != nil {
@@ -87,7 +87,7 @@ func deriveKeys(ctx *gin.Context) {
 			PrvKey:  key.String(),
 			PubKey:  pubKey.String(),
 			Address: p2wpkh.EncodeAddress(),
-			Path: path.Join(param.DerivePath, strconv.FormatInt(int64(uint32(i) + offset), 10)),
+			Path:    path.Join(param.DerivePath, strconv.FormatInt(int64(uint32(i)+offset), 10)),
 		}
 		derivedKeys = append(derivedKeys, derivedKey)
 	}
@@ -97,4 +97,23 @@ func deriveKeys(ctx *gin.Context) {
 		ParentPubKey: pKeyPub.String(),
 		DerivedKeys:  derivedKeys,
 	})
+}
+
+type deriveMultiSigAddrParam struct {
+	N       int      `json:"n" binding:"lte=16,gt=0"`
+	PubKeys []string `json:"pubKeys" binding:"min=1"`
+}
+
+func deriveMultiSigAddr(ctx *gin.Context) {
+	param := deriveMultiSigAddrParam{N: 1}
+	if err := ctx.ShouldBind(&param); err != nil {
+		generalExceptions(ctx, err)
+		return
+	}
+	encodedP2SH, err := wallet.ToMultiSigP2SHAddress(param.N, param.PubKeys)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"p2sh": encodedP2SH})
 }
