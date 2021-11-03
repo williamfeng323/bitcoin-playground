@@ -1,13 +1,13 @@
-import {Theme, createStyles, Typography, withStyles, Paper, WithStyles, Button} from "@material-ui/core";
-import { WalletInterface } from "../../../App";
-import { useHistory } from "react-router-dom";
+import {Theme, createStyles, Typography, withStyles, Paper, WithStyles, Button} from '@material-ui/core';
+import { WalletInterface } from '../../../App';
+import { useHistory } from 'react-router-dom';
 import * as H from 'history';
 
 const paperStyles = (theme:Theme) => {
   return createStyles({
     root: {
       // height: "100%",
-      margin: "auto",
+      margin: 'auto',
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
@@ -17,8 +17,8 @@ const paperStyles = (theme:Theme) => {
       paddingTop: theme.spacing() * 2,
       paddingBottom: theme.spacing() * 2,
     },
-    "guide-create-text": {
-      marginTop: "20px"
+    'guide-create-text': {
+      marginTop: '20px'
     }
   })
 };
@@ -27,11 +27,11 @@ interface Props extends WithStyles<typeof paperStyles> {
 }
 
 const clickToCreate = ( history: H.History) => {
-  history.push("/wallet/create-wallet")
+  history.push('/wallet/create-wallet')
 }
 
 export default withStyles(paperStyles)(({classes, wallets}: Props) => {
-  let history = useHistory();
+  const history = useHistory();
   return (
     <div>
       <Paper className={classes.root} elevation={1}>

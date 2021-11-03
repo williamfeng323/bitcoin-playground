@@ -20,7 +20,7 @@ const homeStyle = makeStyles({
 });
 
 const Home = () => {
-  let {wallets} = useContext(WalletsContext);
+  const {wallets} = useContext(WalletsContext);
   const classes = homeStyle();
   return (
     <React.Fragment>

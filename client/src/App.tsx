@@ -7,7 +7,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from "react-router-dom";
+} from 'react-router-dom';
 import theme from './modules/theme';
 import { Wallet } from './pages/Wallet/Wallet';
 import { useState } from 'react';
@@ -23,7 +23,7 @@ export const WalletsContext = React.createContext<{wallets: WalletInterface[], s
 const initWallets = window.sessionStorage.getItem(LocalStoreWalletsKey)? JSON.parse(window.sessionStorage.getItem(LocalStoreWalletsKey) as string) as WalletInterface[]:[];
 
 function App() {
-  let [wallets, setWallets] = useState<WalletInterface[]>(initWallets);
+  const [wallets, setWallets] = useState<WalletInterface[]>(initWallets);
   return (
     <div className="App">
       <MuiThemeProvider theme={theme}>

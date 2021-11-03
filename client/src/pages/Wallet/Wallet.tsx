@@ -1,7 +1,7 @@
-import { Typography } from "@material-ui/core"
-import { makeStyles } from "@material-ui/styles";
-import {Route, Switch, useRouteMatch} from "react-router-dom";
-import {CreateWallet} from "./pages/CreateWallet/CreateWallet";
+import { Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/styles';
+import {Route, Switch, useRouteMatch} from 'react-router-dom';
+import {CreateWallet} from './pages/CreateWallet/CreateWallet';
 
 const useStyle = makeStyles({
     wallet: {
@@ -11,7 +11,7 @@ const useStyle = makeStyles({
 
 const Wallet = () => {
     const classes = useStyle()
-    let { path } = useRouteMatch();
+    const { path } = useRouteMatch();
     return (
     <div className={classes.wallet}>
         <Switch>
