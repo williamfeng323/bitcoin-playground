@@ -1,0 +1,51 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    image: playground_api:dev
+    container_name: api
+    ports:
+      - 8081:8081
+    networks:
+      - apps
+
+  client:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    image: playground_client:dev
+    container_name: client
+    volumes:
+      - ./client:/var/www/client
+      - /var/www/client/node_modules
+    ports:
+      - 5000:5000
+    links:
+      - api
+    depends_on:
+      - api
+    networks:
+      - apps
+
+  reverse_proxy:
+    image: caddy:2.1.1-alpine
+    container_name: reverse_proxy
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - 80:80
+    links:
+      - api
+      - client
+    depends_on:
+      - api
+      - client
+    networks:
+      - apps
+
+networks:
+  apps:
+    driver: bridge

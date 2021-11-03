@@ -19,6 +19,22 @@ import (
 var wordMap map[string]int
 var wordList []string
 
+var ENT2MS = map[int]int{
+	128: 12,
+	160: 15,
+	192: 18,
+	224: 21,
+	256: 24,
+}
+
+var MS2ENT = map[int]int {
+	12: 128,
+	15: 160,
+	18: 192,
+	21: 224,
+	24: 256,
+}
+
 type Entropy struct {
 	entropy         []byte
 	BitSize         uint

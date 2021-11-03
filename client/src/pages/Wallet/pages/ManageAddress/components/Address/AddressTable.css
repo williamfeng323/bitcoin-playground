@@ -1,0 +1,4 @@
+.cell-content {
+    overflow:auto !important;
+    text-overflow: clip !important;
+}

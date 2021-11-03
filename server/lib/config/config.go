@@ -8,9 +8,11 @@ import (
 )
 
 type ApplicationConfig struct {
-	WordlistURL string `yaml:"wordlist_url"`
+	WordlistURL string `yaml:"wordlistUrl"`
 	Host        string `yaml:"host"`
 	Port        string `yaml:"port"`
+	TLSCertFile string `yaml:"tlsCertFile"`
+	TLSKeyFile  string `yaml:"tlsKeyFile"`
 }
 
 var appConfig ApplicationConfig
@@ -25,8 +27,8 @@ func init() {
 	}
 	appConfig = ApplicationConfig{
 		WordlistURL: "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt",
-		Host: "127.0.0.1",
-		Port: "8080",
+		Host: "0.0.0.0",
+		Port: "8081",
 	}
 	yaml.Unmarshal(rawConfig, &appConfig)
 }

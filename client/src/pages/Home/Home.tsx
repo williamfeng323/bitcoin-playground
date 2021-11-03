@@ -1,22 +1,44 @@
-import { Typography } from '@material-ui/core';
+import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import { useContext } from 'react';
 import { WalletsContext } from '../../App';
-import AddWalletPaper from './components/AddWalletPaper'
+import { ManageAddress } from '../Wallet/pages/ManageAddress/ManageAddress';
+import AddWalletPaper from './components/AddWalletPaper';
+
+const homeStyle = makeStyles({
+  home: {
+    height: '100vh',
+    width: '100%',
+  },
+  addWalletPaper: {
+      width: '50%',
+      top: '40%',
+      margin: 'auto',
+      position: 'relative',
+  }
+});
 
 const Home = () => {
-  let {wallets} = useContext(WalletsContext);
+  const {wallets} = useContext(WalletsContext);
+  const classes = homeStyle();
   return (
-    <div>
+    <React.Fragment>
+
       {
         wallets.length > 0 ?
-          <Typography  variant="h6" color="inherit" noWrap>
-            Bitcoin-Playground-notnull
-          </Typography> :
-          <AddWalletPaper wallets={wallets}/>
-      }
-
-    </div>
+        <div>
+        <ManageAddress wallets={wallets}/>
+        </div>:
+          <div className={classes.home}>
+            <div className={classes.addWalletPaper}>
+              <Container>
+                <AddWalletPaper wallets={wallets}/>
+              </Container>
+            </div>
+          </div>
+        }
+    </React.Fragment>
   )
 };
 

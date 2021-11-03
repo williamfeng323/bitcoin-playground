@@ -1,5 +1,5 @@
-import { createTheme } from "@material-ui/core";
-import { green, grey, red } from "@material-ui/core/colors";
+import { createTheme } from '@material-ui/core';
+import { green, grey, red } from '@material-ui/core/colors';
 
 const rawTheme = createTheme({
   palette: {
@@ -29,7 +29,7 @@ const rawTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: "'Work Sans', sans-serif",
+    fontFamily: '\'Work Sans\', sans-serif',
     fontSize: 14,
     fontWeightLight: 300, // Work Sans
     fontWeightRegular: 400, // Work Sans
@@ -40,7 +40,7 @@ const rawTheme = createTheme({
 const fontHeader = {
   color: rawTheme.palette.text.primary,
   fontWeight: rawTheme.typography.fontWeightMedium,
-  fontFamily: "'Roboto Condensed', sans-serif",
+  fontFamily: '\'Roboto Condensed\', sans-serif',
   textTransform: 'uppercase',
 };
 

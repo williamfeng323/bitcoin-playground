@@ -4,4 +4,6 @@ package constant
 const (
 	ConfigPathEnv  = "APP_CONFIG"
 	ApplicationEnv = "APP_ENV"
+	PathSeparator  = "/"
+	HardenReMark = "'"
 )
